@@ -54,3 +54,15 @@ func (u User) ID() string {
 func (u User) Name() string {
 	return u.name.Value()
 }
+
+func (u User) Email() string {
+	return u.email.Value()
+}
+
+func (u User) Phone() string {
+	return u.phone.Value()
+}
+
+func (u User) CPF() string {
+	return u.cpf.Value()
+}
