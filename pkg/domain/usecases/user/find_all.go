@@ -1,6 +1,6 @@
 package user
 
-type FindAllUserOutput struct {
+type FindAllOutput struct {
 	ID    string
 	Name  string
 	Email string
@@ -8,6 +8,6 @@ type FindAllUserOutput struct {
 	Phone string
 }
 
-type FindAllUserUseCase interface {
-	Execute() ([]FindAllUserOutput, error)
+type FindAll interface {
+	Execute() ([]FindAllOutput, error)
 }

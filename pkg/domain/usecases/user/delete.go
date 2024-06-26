@@ -1,5 +1,5 @@
 package user
 
-type DeleteUserUseCase interface {
+type Delete interface {
 	Execute(id string) error
 }

@@ -1,16 +1,16 @@
 package user
 
-type CreateUserInput struct {
+type CreateInput struct {
 	Name  string
 	Email string
 	CPF   string
 	Phone string
 }
 
-type CreateUserOutput struct {
+type CreateOutput struct {
 	ID string
 }
 
-type CreateUserUseCase interface {
-	Execute(input CreateUserInput) (*CreateUserOutput, error)
+type Create interface {
+	Execute(input CreateInput) (*CreateOutput, error)
 }
