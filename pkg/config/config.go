@@ -9,20 +9,22 @@ import (
 	"runtime"
 
 	"github.com/davecgh/go-spew/spew"
+	"github.com/go-playground/validator/v10"
 	"github.com/spf13/viper"
 )
 
 type config struct {
 	Database struct {
-		User     string
-		Password string
-		Port     string
-		Name     string
-		Host     string
-	}
+		Type     string `mapstructure:"type" validate:"required"`
+		User     string `mapstructure:"user" validate:"required"`
+		Password string `mapstructure:"password" validate:"required"`
+		Port     string `mapstructure:"port" validate:"required"`
+		Name     string `mapstructure:"name" validate:"required"`
+		Host     string `mapstructure:"host" validate:"required"`
+	} `mapstructure:"database"`
 	Server struct {
-		Port string
-	}
+		Port string `mapstructure:"port" validate:"required"`
+	} `mapstructure:"server"`
 }
 
 var C config
@@ -41,6 +43,15 @@ func ReadConfig() {
 
 	if err := viper.Unmarshal(config); err != nil {
 		fmt.Println(err)
+		os.Exit(1)
+	}
+
+	validate := validator.New()
+	if err := validate.Struct(config); err != nil {
+		validationErrors := err.(validator.ValidationErrors)
+		for _, e := range validationErrors {
+			fmt.Println(e)
+		}
 		os.Exit(1)
 	}
 
