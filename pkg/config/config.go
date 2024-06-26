@@ -29,7 +29,6 @@ var C config
 
 func ReadConfig() {
 	config := &C
-
 	viper.SetConfigName("config")
 	viper.SetConfigType("json")
 	viper.AddConfigPath(path.Join(rootDir(), "config"))

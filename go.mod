@@ -1,11 +1,12 @@
 module github.com/duardoqueiroz/my-finances-golang
 
-go 1.22.4
+go 1.22
 
 require (
 	github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc
 	github.com/google/uuid v1.4.0
 	github.com/klassmann/cpfcnpj v0.0.0-20200907140233-a595c5fd8de1
+	github.com/nyaruka/phonenumbers v1.3.6
 	github.com/spf13/viper v1.19.0
 )
 
@@ -14,7 +15,6 @@ require (
 	github.com/hashicorp/hcl v1.0.0 // indirect
 	github.com/magiconair/properties v1.8.7 // indirect
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
-	github.com/nyaruka/phonenumbers v1.3.6 // indirect
 	github.com/pelletier/go-toml/v2 v2.2.2 // indirect
 	github.com/sagikazarmark/locafero v0.4.0 // indirect
 	github.com/sagikazarmark/slog-shim v0.1.0 // indirect
