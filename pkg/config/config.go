@@ -2,8 +2,6 @@ package config
 
 import (
 	"fmt"
-	"log"
-	"os"
 	"path"
 	"path/filepath"
 	"runtime"
@@ -24,26 +22,23 @@ type config struct {
 	} `mapstructure:"database"`
 	Server struct {
 		Port string `mapstructure:"port" validate:"required"`
+		Host string `mapstructure:"host" validate:"required"`
 	} `mapstructure:"server"`
 }
 
-var C config
-
-func ReadConfig() {
-	config := &C
+func ReadConfig() (*config, error) {
+	config := &config{}
 	viper.SetConfigName("config")
 	viper.SetConfigType("json")
 	viper.AddConfigPath(path.Join(rootDir(), "config"))
 	viper.AutomaticEnv()
 
 	if err := viper.ReadInConfig(); err != nil {
-		fmt.Println(err)
-		log.Fatalln(err)
+		return nil, fmt.Errorf("error reading config file, %s", err)
 	}
 
 	if err := viper.Unmarshal(config); err != nil {
-		fmt.Println(err)
-		os.Exit(1)
+		return nil, fmt.Errorf("unable to decode into struct, %v", err)
 	}
 
 	validate := validator.New()
@@ -52,10 +47,11 @@ func ReadConfig() {
 		for _, e := range validationErrors {
 			fmt.Println(e)
 		}
-		os.Exit(1)
+		return nil, fmt.Errorf("error validating config, %v", err)
 	}
 
-	spew.Dump(C)
+	spew.Dump(config)
+	return config, nil
 }
 
 func rootDir() string {
