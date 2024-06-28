@@ -2,22 +2,34 @@ package main
 
 import (
 	"fmt"
-	"net/http"
+	"os"
 
 	"github.com/duardoqueiroz/my-finances-golang/pkg/config"
+	"github.com/duardoqueiroz/my-finances-golang/pkg/factories"
+	"github.com/duardoqueiroz/my-finances-golang/pkg/infra/api/routes"
 	"github.com/duardoqueiroz/my-finances-golang/pkg/infra/database/repositories/postgres"
 )
 
 func main() {
-	config.ReadConfig()
+	conf, err := config.ReadConfig()
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
 
-	db := postgres.SetupCredentials(config.C.Database.User, config.C.Database.Password, config.C.Database.Port, config.C.Database.Name, config.C.Database.Host)
-	db.Connect()
+	db := postgres.SetupCredentials(conf.Database.User, conf.Database.Password, conf.Database.Port, conf.Database.Name, conf.Database.Host)
+	if err := db.Connect(); err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
 	defer db.Disconnect()
 
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprintf(w, "Hello, World!")
-	})
+	conn := db.Connection()
 
-	http.ListenAndServe(fmt.Sprintf(":%s", config.C.Server.Port), nil)
+	repoFactory := factories.NewRepositoryFactory(postgres.NewUserRepository(conn))
+
+	server := routes.LoadRoutes(repoFactory)
+	server.Debug = true
+	address := fmt.Sprintf("%s:%s", conf.Server.Host, conf.Server.Port)
+	server.Logger.Info(server.Start(address))
 }
