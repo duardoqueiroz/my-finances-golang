@@ -11,8 +11,8 @@ func NewName(value string) (*Name, error) {
 		return nil, fmt.Errorf("name must have at least 2 characters")
 	}
 
-	if len(value) > 100 {
-		return nil, fmt.Errorf("name must have at most 100 characters")
+	if len(value) > 70 {
+		return nil, fmt.Errorf("name must have at most 70 characters")
 	}
 	return &Name{value: value}, nil
 }
