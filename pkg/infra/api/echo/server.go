@@ -11,19 +11,22 @@ import (
 
 	"github.com/duardoqueiroz/my-finances-golang/pkg/infra/api/echo/routes"
 	"github.com/duardoqueiroz/my-finances-golang/pkg/infra/database"
+	"github.com/duardoqueiroz/my-finances-golang/pkg/infra/logger"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 )
 
 type echoServer struct {
 	router      *echo.Echo
+	logger logger.Logger
 	repoHandler database.RepositoryHandler
 }
 
-func NewEchoServer(repoHandler database.RepositoryHandler) *echoServer {
+func NewEchoServer(repoHandler database.RepositoryHandler, logger logger.Logger) *echoServer {
 	return &echoServer{
 		router:      echo.New(),
 		repoHandler: repoHandler,
+		logger: logger,
 	}
 }
 
@@ -44,8 +47,7 @@ func (s *echoServer) Listen() {
 
 	go func() {
 		if err := s.router.Start(fmt.Sprintf(":%s", os.Getenv("PORT"))); err != nil {
-			fmt.Println(err)
-			os.Exit(1)
+			s.logger.WithError(err).Fatalln("error starting server")
 		}
 	}()
 
@@ -57,11 +59,10 @@ func (s *echoServer) Listen() {
 	}()
 
 	if err := s.router.Shutdown(ctx); err != nil {
-		fmt.Println(err)
-		os.Exit(1)
+		s.logger.WithError(err).Fatalln("error stopping server")
 	}
 
-	fmt.Println("Server stopped")
+	s.logger.InfoF("server stopped")
 }
 
 func (s *echoServer) setAppHandlers(router *echo.Echo) {
@@ -72,5 +73,4 @@ func (s *echoServer) setAppHandlers(router *echo.Echo) {
 	})
 
 	routes.LoadUserRoutes(api, s.repoHandler)
-
 }
