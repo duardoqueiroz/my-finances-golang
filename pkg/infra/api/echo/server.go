@@ -9,6 +9,8 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/casbin/casbin"
+	"github.com/duardoqueiroz/my-finances-golang/pkg/infra/api/echo/middlewares"
 	"github.com/duardoqueiroz/my-finances-golang/pkg/infra/api/echo/routes"
 	"github.com/duardoqueiroz/my-finances-golang/pkg/infra/database"
 	"github.com/duardoqueiroz/my-finances-golang/pkg/infra/logger"
@@ -20,13 +22,15 @@ type echoServer struct {
 	router      *echo.Echo
 	logger logger.Logger
 	repoHandler database.RepositoryHandler
+	authEnforcer *casbin.Enforcer
 }
 
-func NewEchoServer(repoHandler database.RepositoryHandler, logger logger.Logger) *echoServer {
+func NewEchoServer(repoHandler database.RepositoryHandler, enforcer *casbin.Enforcer, logger logger.Logger) *echoServer {
 	return &echoServer{
 		router:      echo.New(),
 		repoHandler: repoHandler,
 		logger: logger,
+		authEnforcer: enforcer,
 	}
 }
 
@@ -35,7 +39,8 @@ func (s *echoServer) Listen() {
 
 	s.router.Use(middleware.Logger())
 	s.router.Use(middleware.Recover())
-
+	s.router.Use(middlewares.UserAuthorizer(s.authEnforcer,  s.repoHandler.UserRepository()))
+	
 	// s.router.Server = &http.Server{
 	// 	Addr:         fmt.Sprintf(":%s", os.Getenv("PORT")),
 	// 	ReadTimeout:  5 * time.Second,

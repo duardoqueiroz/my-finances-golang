@@ -1,8 +1,13 @@
 package config
 
 import (
+	"fmt"
 	"log"
+	"path"
+	"path/filepath"
+	"runtime"
 
+	"github.com/casbin/casbin"
 	"github.com/duardoqueiroz/my-finances-golang/pkg/infra/api"
 	"github.com/duardoqueiroz/my-finances-golang/pkg/infra/database"
 	"github.com/duardoqueiroz/my-finances-golang/pkg/infra/logger"
@@ -28,7 +33,7 @@ func (c *config) AppName(appname string) *config {
 func (c *config) Database(instanceId int) *config {
 	db, repositoryHandler, err := database.NewSQLDatabaseFactory(instanceId)
 	if err != nil {
-		log.Fatalln("error configuring database: %w", err)
+		c.logger.Fatalln("error configuring database: %w", err)
 	}
 
 	c.logger.InfoF("Database configured successfully!")
@@ -39,9 +44,14 @@ func (c *config) Database(instanceId int) *config {
 }
 
 func (c *config) Server(instanceId int) *config {
-	server, err := api.NewServerInstanceFactory(instanceId, c.repositoryHandler, c.logger)
+	authEnforcer, err := newAuthEnforcer()
 	if err != nil {
-		log.Fatalln("error initializing webserver: %w", err)
+		c.logger.Fatalln("error initializing auth enforcer: %w", err)
+	}
+
+	server, err := api.NewServerInstanceFactory(instanceId, c.repositoryHandler, c.logger, authEnforcer)
+	if err != nil {
+		c.logger.Fatalln("error initializing webserver: %w", err)
 	}
 
 	c.logger.InfoF("WebServer configured successfully!")
@@ -63,6 +73,15 @@ func (c *config) Logger(instanceId int) *config {
 	return c
 }
 
+func newAuthEnforcer() (*casbin.Enforcer, error) {
+	configPath := path.Join(rootDir(), "config")
+	authEnforcer, err := casbin.NewEnforcerSafe(fmt.Sprintf("%s/auth_model.conf", configPath),fmt.Sprintf("%s/policy.csv", configPath))
+	if err != nil {
+		return nil, err
+	}
+	return authEnforcer,nil
+}
+
 func (c *config) StartServer() {
 	c.server.Listen()
 }
@@ -77,4 +96,10 @@ func (c *config) DisconnectDatabase() {
 	if err := c.db.Disconnect(); err != nil {
 		log.Fatalln("error disconnecting to database: %w", err)
 	}
+}
+
+func rootDir() string {
+	_, b, _, _ := runtime.Caller(0)
+	d := path.Join(path.Dir(b))
+	return filepath.Dir(d)
 }
