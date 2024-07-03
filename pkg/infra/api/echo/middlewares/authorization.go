@@ -16,34 +16,34 @@ var (
 )
 
 func UserAuthorizer(authEnforcer *casbin.Enforcer, userRepo repositories.UserRepository) func(next echo.HandlerFunc) echo.HandlerFunc {
-	return func(next echo.HandlerFunc) echo.HandlerFunc{
+	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		fn := func(c echo.Context) error {
 			role := "anonymous"
 			token := c.Request().Header.Get("Authorization")
-			var id string 
+			var id string
 			var err error
-			if token !="" {
+			if token != "" {
 				id, role, err = parseToken(token)
 				if err != nil {
 					return c.JSON(http.StatusInternalServerError, &outputs.CustomError{
-						Name: AuthorizationError,
+						Name:    AuthorizationError,
 						Message: err.Error(),
 					})
 				}
 			}
 
-			if role != "anonymous"{
+			if role != "anonymous" {
 				user, err := userRepo.FindByID(id)
-				if user == nil {
-					return c.JSON(http.StatusForbidden, &outputs.CustomError{
-						Name: AuthorizationError,
-						Message: "Method not allowed",
-					})
-				}
 				if err != nil {
 					return c.JSON(http.StatusInternalServerError, &outputs.CustomError{
-						Name: AuthorizationError,
+						Name:    AuthorizationError,
 						Message: err.Error(),
+					})
+				}
+				if user == nil {
+					return c.JSON(http.StatusForbidden, &outputs.CustomError{
+						Name:    AuthorizationError,
+						Message: "Method not allowed for anonymous user",
 					})
 				}
 			}
@@ -51,14 +51,14 @@ func UserAuthorizer(authEnforcer *casbin.Enforcer, userRepo repositories.UserRep
 			result, err := authEnforcer.EnforceSafe(role, c.Request().URL.Path, c.Request().Method)
 			if err != nil {
 				return c.JSON(http.StatusInternalServerError, &outputs.CustomError{
-					Name: AuthorizationError,
+					Name:    AuthorizationError,
 					Message: err.Error(),
 				})
 			}
 
 			if !result {
 				return c.JSON(http.StatusForbidden, &outputs.CustomError{
-					Name: AuthorizationError,
+					Name:    AuthorizationError,
 					Message: "Method not allowed",
 				})
 			}
@@ -70,9 +70,9 @@ func UserAuthorizer(authEnforcer *casbin.Enforcer, userRepo repositories.UserRep
 }
 
 func parseToken(token string) (string, string, error) {
-	parsedToken,err := security.ParseAccessToken(token)
+	parsedToken, err := security.ParseAccessToken(token)
 	if err != nil {
-		return "","", fmt.Errorf("error parsing token: %w", err)
+		return "", "", fmt.Errorf("error parsing token: %w", err)
 	}
-	return parsedToken.Id, parsedToken.Role,nil
+	return parsedToken.Id, parsedToken.Role, nil
 }
