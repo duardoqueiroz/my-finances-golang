@@ -1,3 +1,5 @@
+CREATE TYPE user_roles AS ENUM ('admin','member');
+
 CREATE TABLE users (
     id TEXT PRIMARY KEY,
     name VARCHAR(70) NOT NULL,
@@ -5,6 +7,7 @@ CREATE TABLE users (
     password TEXT NOT NULL,
     cpf VARCHAR(11) NOT NULL,
     phone VARCHAR(20) NOT NULL,
+    role USER_ROLES,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 )

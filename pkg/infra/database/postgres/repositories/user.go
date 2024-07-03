@@ -22,7 +22,7 @@ func (u User) FindByID(id string) (*entities.User, error) {
 }
 
 func (u User) Create(user *entities.User) (string, error) {
-	_, err := u.conn.Exec("INSERT INTO users (id, name, email, cpf, phone, password) VALUES ($1, $2, $3, $4, $5, $6)", user.ID(), user.Name(), user.Email(), user.CPF(), user.Phone(), user.Password())
+	_, err := u.conn.Exec("INSERT INTO users (id, name, email, cpf, phone, password, role) VALUES ($1, $2, $3, $4, $5, $6, $7)", user.ID(), user.Name(), user.Email(), user.CPF(), user.Phone(), user.Password(), user.Role())
 	if err != nil {
 		return "", err
 	}

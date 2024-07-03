@@ -12,6 +12,7 @@ type User struct {
 	cpf      *keyvalues.CPF
 	phone    *keyvalues.Phone
 	password *keyvalues.Password
+	role     *keyvalues.Role
 }
 
 func NewUser(name, email, cpf, phone, password string) (*User, error) {
@@ -40,6 +41,12 @@ func NewUser(name, email, cpf, phone, password string) (*User, error) {
 		return nil, err
 	}
 
+	// Default value for user role: member
+	roleValue, err := keyvalues.NewRole(keyvalues.MemberRole)
+	if err != nil {
+		return nil, err
+	}
+
 	return &User{
 		id:       uuid.New().String(),
 		name:     nameValue,
@@ -47,6 +54,7 @@ func NewUser(name, email, cpf, phone, password string) (*User, error) {
 		cpf:      cpfValue,
 		phone:    phoneValue,
 		password: passwordValue,
+		role:     roleValue,
 	}, nil
 }
 
@@ -72,4 +80,8 @@ func (u User) Phone() string {
 
 func (u User) Password() string {
 	return u.password.Value()
+}
+
+func (u User) Role() string {
+	return u.role.Value()
 }
