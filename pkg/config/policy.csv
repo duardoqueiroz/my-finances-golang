@@ -1,2 +1,3 @@
-p, admin, /*, *
+p, admin, /api/admin*, *
+p, member, /api/member*, *
 p, anonymous, /api/users, POST
