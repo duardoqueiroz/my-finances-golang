@@ -1,7 +1,8 @@
 package outputs
 
 type CreateUserOutput struct {
-	ID string `json:"id"`
+	ID    string `json:"id"`
+	Token string `json:"token"`
 }
 
 type FindUserByIDOutput struct {
@@ -10,6 +11,7 @@ type FindUserByIDOutput struct {
 	Email string `json:"email"`
 	CPF   string `json:"cpf"`
 	Phone string `json:"phone"`
+	Role  string `json:"role"`
 }
 
 type FindAllUserOutput struct {
