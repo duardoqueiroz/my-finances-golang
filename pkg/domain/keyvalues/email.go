@@ -18,6 +18,10 @@ func NewEmail(value string) (*Email, error) {
 	return &Email{value: email.Address}, nil
 }
 
+func NewExistentEmail(value string) *Email {
+	return &Email{value: value}
+}
+
 func (e Email) Value() string {
 	return e.value
 }

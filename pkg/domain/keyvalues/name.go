@@ -17,6 +17,10 @@ func NewName(value string) (*Name, error) {
 	return &Name{value: value}, nil
 }
 
+func NewExistentName(value string) *Name {
+	return &Name{value: value}
+}
+
 func (n Name) Value() string {
 	return n.value
 }

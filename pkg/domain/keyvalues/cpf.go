@@ -22,6 +22,10 @@ func NewCPF(value string) (*CPF, error) {
 	return &CPF{value: cpfValue}, nil
 }
 
+func NewExistentCPF(value string) *CPF {
+	return &CPF{value: value}
+}
+
 func (c CPF) Value() string {
 	return c.value
 }

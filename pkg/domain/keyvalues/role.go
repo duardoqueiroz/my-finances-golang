@@ -22,6 +22,10 @@ func NewRole(value int) (*Role, error) {
 	}
 }
 
+func NewExistentRole(value string) *Role {
+	return &Role{value: value}
+}
+
 func (r *Role) Value() string {
 	return r.value
 }

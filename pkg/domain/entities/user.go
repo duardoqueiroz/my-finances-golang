@@ -58,6 +58,17 @@ func NewUser(name, email, cpf, phone, password string) (*User, error) {
 	}, nil
 }
 
+func NewExistentUser(id, name, email, cpf, phone, role string) *User {
+	return &User{
+		id:    id,
+		name:  keyvalues.NewExistentName(name),
+		email: keyvalues.NewExistentEmail(email),
+		cpf:   keyvalues.NewExistentCPF(cpf),
+		phone: keyvalues.NewExistentPhone(phone),
+		role:  keyvalues.NewExistentRole(role),
+	}
+}
+
 func (u User) ID() string {
 	return u.id
 }
