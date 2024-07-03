@@ -5,6 +5,7 @@ import (
 	"github.com/duardoqueiroz/my-finances-golang/pkg/application/outputs"
 	"github.com/duardoqueiroz/my-finances-golang/pkg/domain/entities"
 	"github.com/duardoqueiroz/my-finances-golang/pkg/domain/repositories"
+	"github.com/duardoqueiroz/my-finances-golang/pkg/infra/security"
 )
 
 type UserUseCase struct {
@@ -24,7 +25,15 @@ func (u UserUseCase) Create(input inputs.CreateUserInput) (*outputs.CreateUserOu
 	if err != nil {
 		return nil, err
 	}
-	return &outputs.CreateUserOutput{ID: id}, nil
+	claims := security.UserClaims{
+		Id:   id,
+		Role: user.Role(),
+	}
+	jwtToken, err := security.NewAccessToken(claims)
+	if err != nil {
+		return nil, err
+	}
+	return &outputs.CreateUserOutput{ID: id, Token: jwtToken}, nil
 }
 
 func (u UserUseCase) Update(id string, input inputs.UpdateUserInput) error {
@@ -36,7 +45,18 @@ func (u UserUseCase) FindAll() ([]outputs.FindAllUserOutput, error) {
 }
 
 func (u UserUseCase) FindByID(id string) (*outputs.FindUserByIDOutput, error) {
-	return nil, nil
+	user, err := u.repo.FindByID(id)
+	if err != nil {
+		return nil, err
+	}
+	return &outputs.FindUserByIDOutput{
+		ID:    user.ID(),
+		Name:  user.Name(),
+		Email: user.Email(),
+		CPF:   user.CPF(),
+		Phone: user.Phone(),
+		Role:  user.Role(),
+	}, nil
 }
 
 func (u UserUseCase) Delete(id string) error {
