@@ -15,4 +15,5 @@ func LoadUserRoutes(group *echo.Group, repoHandler database.RepositoryHandler) {
 	userHandler := handlers.NewUserHandler(userUseCase)
 
 	userGroup.POST("", userHandler.Create)
+	userGroup.GET("/me", userHandler.FindMe)
 }
