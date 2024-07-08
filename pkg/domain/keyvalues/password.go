@@ -24,6 +24,10 @@ func NewPassword(value string) (*Password, error) {
 	return &Password{value: hash}, nil
 }
 
+func NewExistentPassword(value string) *Password {
+	return &Password{value: value}
+}
+
 func hashPassword(pwd string) (string, error) {
 	hash, err := bcrypt.GenerateFromPassword([]byte(pwd), bcrypt.DefaultCost)
 	if err != nil {
