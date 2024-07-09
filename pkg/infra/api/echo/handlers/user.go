@@ -48,3 +48,16 @@ func (u UserHandler) Update(c echo.Context) error {
 	}
 	return c.JSON(http.StatusOK, "User updated")
 }
+
+func (uh UserHandler) Delete(c echo.Context) error {
+	id := c.Param("id")
+
+	err := uh.usecase.Delete(id)
+	if err != nil {
+		return c.JSON(http.StatusNotFound, &outputs.CustomError{
+			Name:    "User cant be deleted",
+			Message: err.Error(),
+		})
+	}
+	return c.NoContent(http.StatusNoContent)
+}
