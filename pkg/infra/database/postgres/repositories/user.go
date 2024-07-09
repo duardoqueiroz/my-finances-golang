@@ -1,6 +1,7 @@
 package repositories
 
 import (
+	"database/sql"
 	"errors"
 	"fmt"
 
@@ -64,6 +65,11 @@ func (u User) Update(id string, user *entities.User) error {
 }
 
 func (u User) Delete(id string) error {
+	query := queries.User().Delete()
+	_, err := u.conn.Exec(query, id)
+	if err != nil {
+		return u.handleErrors(err)
+	}
 	return nil
 }
 
@@ -71,6 +77,11 @@ func (u User) handleErrors(err error) error {
 	if err == nil {
 		return nil
 	}
+
+	if err == sql.ErrNoRows {
+		return errors.New("user not found")
+	}
+
 	if pgErr, ok := err.(*pq.Error); ok {
 		switch pgErr.Code.Name() {
 		case "unique_violation":

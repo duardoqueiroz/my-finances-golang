@@ -17,4 +17,5 @@ func LoadUserRoutes(group *echo.Group, repoHandler database.RepositoryHandler) {
 
 	userGroup.GET("/me", userHandler.FindMe)
 	userGroup.PUT("/:id", userHandler.Update, middlewares.EnsureAuthenticatedUser())
+	userGroup.DELETE("/:id", userHandler.Delete, middlewares.EnsureAuthenticatedUser())
 }

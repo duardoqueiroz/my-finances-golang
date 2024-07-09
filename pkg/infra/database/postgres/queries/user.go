@@ -7,11 +7,11 @@ func User() *userSqlManager {
 	return &userSqlManager{}
 }
 
-func (*userSqlManager) Select() *userSelectManager {
+func (userSqlManager) Select() *userSelectManager {
 	return &userSelectManager{}
 }
 
-func (*userSelectManager) ById() string {
+func (userSelectManager) ById() string {
 	return `
     SELECT 
       u.id as id, 
@@ -25,7 +25,7 @@ func (*userSelectManager) ById() string {
   `
 }
 
-func (*userSelectManager) ByEmail() string {
+func (userSelectManager) ByEmail() string {
 	return `
     SELECT 
       u.id as id, 
@@ -39,7 +39,7 @@ func (*userSelectManager) ByEmail() string {
   `
 }
 
-func (*userSqlManager) Update() string {
+func (userSqlManager) Update() string {
 	return `
   UPDATE users SET 
     name=$1, 
@@ -53,11 +53,17 @@ func (*userSqlManager) Update() string {
   `
 }
 
-func (*userSqlManager) Create() string {
+func (userSqlManager) Create() string {
 	return `
     INSERT INTO users 
       (id, name, email, cpf, phone, password, role) 
     VALUES 
-      ($1, $2, $3, $4, $5, $6, $7)
+      ($1, $2, $3, $4, $5, $6, $7);
+  `
+}
+
+func (userSqlManager) Delete() string {
+	return `
+  DELETE FROM users WHERE id = $1;
   `
 }

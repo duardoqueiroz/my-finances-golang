@@ -44,6 +44,12 @@ func (u UserUseCase) FindByID(id string) (*outputs.FindUserByIDOutput, error) {
 }
 
 func (u UserUseCase) Delete(id string) error {
-
+	if _, err := u.repo.FindByID(id); err != nil {
+		return err
+	}
+	err := u.repo.Delete(id)
+	if err != nil {
+		return err
+	}
 	return nil
 }
