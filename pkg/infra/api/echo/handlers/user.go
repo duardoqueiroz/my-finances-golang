@@ -6,7 +6,6 @@ import (
 	"github.com/duardoqueiroz/my-finances-golang/pkg/application/inputs"
 	"github.com/duardoqueiroz/my-finances-golang/pkg/application/outputs"
 	"github.com/duardoqueiroz/my-finances-golang/pkg/domain/usecases"
-	"github.com/duardoqueiroz/my-finances-golang/pkg/infra/security"
 	"github.com/labstack/echo/v4"
 )
 
@@ -18,18 +17,23 @@ func NewUserHandler(userUseCase usecases.User) *UserHandler {
 	return &UserHandler{usecase: userUseCase}
 }
 
-func (u UserHandler) FindMe(c echo.Context) error {
-	token := c.Request().Header.Get("Authorization")
-	claims, err := security.ParseAccessToken(token)
-	if err != nil {
-		return c.JSON(http.StatusBadRequest, "error trying to parse access token")
-	}
-	user, err := u.usecase.FindByID(claims.Id)
+func (u UserHandler) FindById(c echo.Context) error {
+	id := c.Param("id")
+	user, err := u.usecase.FindByID(id)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, "error trying to find user")
 	}
 
 	return c.JSON(http.StatusOK, user)
+}
+
+func (u UserHandler) FindAll(c echo.Context) error {
+	users, err := u.usecase.FindAll()
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, err.Error())
+	}
+
+	return c.JSON(http.StatusOK, users)
 }
 
 func (u UserHandler) Update(c echo.Context) error {

@@ -15,7 +15,8 @@ func LoadUserRoutes(group *echo.Group, repoHandler database.RepositoryHandler) {
 	userUseCase := usecases.NewUserUseCase(userRepo)
 	userHandler := handlers.NewUserHandler(userUseCase)
 
-	userGroup.GET("/me", userHandler.FindMe)
+	userGroup.GET("/:id", userHandler.FindById, middlewares.EnsureAuthenticatedUser())
+	userGroup.GET("", userHandler.FindAll, middlewares.IsAdmin())
 	userGroup.PUT("/:id", userHandler.Update, middlewares.EnsureAuthenticatedUser())
 	userGroup.DELETE("/:id", userHandler.Delete, middlewares.EnsureAuthenticatedUser())
 }
