@@ -44,7 +44,9 @@ func (u User) FindByEmail(email string) (*entities.User, error) {
 }
 
 func (u User) Create(user *entities.User) (string, error) {
-	_, err := u.conn.Exec("INSERT INTO users (id, name, email, cpf, phone, password, role) VALUES ($1, $2, $3, $4, $5, $6, $7)", user.ID(), user.Name(), user.Email(), user.CPF(), user.Phone(), user.PasswordHash(), user.Role())
+	query := queries.User().Create()
+	args := dtos.User().Create(user)
+	_, err := u.conn.Exec(query, args...)
 	if err != nil {
 		return "", u.handleErrors(err)
 	}
@@ -52,6 +54,12 @@ func (u User) Create(user *entities.User) (string, error) {
 }
 
 func (u User) Update(id string, user *entities.User) error {
+	query := queries.User().Update()
+	args := dtos.User().Update(id, user)
+	_, err := u.conn.Exec(query, args...)
+	if err != nil {
+		return u.handleErrors(err)
+	}
 	return nil
 }
 

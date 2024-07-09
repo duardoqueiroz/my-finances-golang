@@ -37,3 +37,27 @@ func (userDtoSelectManager) ById() userDto {
 func (userDtoSelectManager) ByEmail() userDto {
 	return userDto{}
 }
+
+func (userDtoManager) Update(id string, user *entities.User) []interface{} {
+	return []interface{}{
+		user.Name(),
+		user.Email(),
+		user.Phone(),
+		user.CPF(),
+		user.PasswordHash(),
+		user.Role(),
+		id,
+	}
+}
+
+func (userDtoManager) Create(user *entities.User) []interface{} {
+	return []interface{}{
+		user.ID(),
+		user.Name(),
+		user.Email(),
+		user.CPF(),
+		user.Phone(),
+		user.PasswordHash(),
+		user.Role(),
+	}
+}
