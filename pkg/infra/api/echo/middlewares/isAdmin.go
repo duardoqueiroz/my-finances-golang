@@ -7,10 +7,9 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-func EnsureAuthenticatedUser() func(next echo.HandlerFunc) echo.HandlerFunc {
+func IsAdmin() func(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		fn := func(c echo.Context) error {
-			userId := c.Param("id")
 			token, err := getToken(c.Request().Header.Get("Authorization"))
 			if err != nil {
 				return c.JSON(http.StatusForbidden, &outputs.CustomError{
@@ -18,17 +17,17 @@ func EnsureAuthenticatedUser() func(next echo.HandlerFunc) echo.HandlerFunc {
 					Message: err.Error(),
 				})
 			}
-			id, role, err := parseToken(token)
+			_, role, err := parseToken(token)
 			if err != nil {
 				return c.JSON(http.StatusForbidden, &outputs.CustomError{
 					Name:    AuthorizationError,
 					Message: err.Error(),
 				})
 			}
-			if id != userId && role != "admin" {
+			if role != "admin" {
 				return c.JSON(http.StatusMethodNotAllowed, &outputs.CustomError{
 					Name:    AuthorizationError,
-					Message: "Unauthorized resource",
+					Message: "Method not allowed",
 				})
 			}
 			return next(c)

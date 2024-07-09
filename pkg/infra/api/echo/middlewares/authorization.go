@@ -16,11 +16,10 @@ var (
 func UserAuthorizer(authEnforcer *casbin.Enforcer, userRepo repositories.UserRepository) func(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		fn := func(c echo.Context) error {
-			role := "anonymous"
-			token := c.Request().Header.Get("Authorization")
 			var id string
-			var err error
-			if token != "" {
+			role := "anonymous"
+			token, err := getToken(c.Request().Header.Get("Authorization"))
+			if err == nil {
 				id, role, err = parseToken(token)
 				if err != nil {
 					return c.JSON(http.StatusInternalServerError, &outputs.CustomError{
@@ -31,17 +30,11 @@ func UserAuthorizer(authEnforcer *casbin.Enforcer, userRepo repositories.UserRep
 			}
 
 			if role != "anonymous" {
-				user, err := userRepo.FindByID(id)
+				_, err := userRepo.FindByID(id)
 				if err != nil {
-					return c.JSON(http.StatusInternalServerError, &outputs.CustomError{
-						Name:    AuthorizationError,
-						Message: err.Error(),
-					})
-				}
-				if user == nil {
 					return c.JSON(http.StatusForbidden, &outputs.CustomError{
 						Name:    AuthorizationError,
-						Message: "Method not allowed for anonymous user",
+						Message: "Method not allowed",
 					})
 				}
 			}
