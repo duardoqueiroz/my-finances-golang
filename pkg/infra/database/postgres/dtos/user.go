@@ -34,6 +34,10 @@ func (userDtoSelectManager) ById() userDto {
 	return userDto{}
 }
 
+func (userDtoSelectManager) All() []userDto {
+	return []userDto{}
+}
+
 func (userDtoSelectManager) ByEmail() userDto {
 	return userDto{}
 }

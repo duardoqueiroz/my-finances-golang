@@ -25,7 +25,22 @@ func (u UserUseCase) Update(id string, input inputs.UpdateUserInput) error {
 }
 
 func (u UserUseCase) FindAll() ([]outputs.FindAllUserOutput, error) {
-	return []outputs.FindAllUserOutput{}, nil
+	users, err := u.repo.FindAll()
+	if err != nil {
+		return nil, err
+	}
+	var usersOutput []outputs.FindAllUserOutput
+	for _, user := range users {
+		userOutput := outputs.FindAllUserOutput{
+			ID:    user.ID(),
+			Name:  user.Name(),
+			Email: user.Email(),
+			CPF:   user.CPF(),
+			Phone: user.Phone(),
+		}
+		usersOutput = append(usersOutput, userOutput)
+	}
+	return usersOutput, nil
 }
 
 func (u UserUseCase) FindByID(id string) (*outputs.FindUserByIDOutput, error) {

@@ -21,7 +21,19 @@ func NewUserRepository(conn *sqlx.DB) *User {
 }
 
 func (u User) FindAll() ([]entities.User, error) {
-	return []entities.User{}, nil
+	dest := dtos.User().Select().All()
+	query := queries.User().Select().All()
+
+	err := u.conn.Select(&dest, query)
+	if err != nil {
+		return nil, u.handleErrors(err)
+	}
+	var users []entities.User
+	for _, dto := range dest {
+		user := dto.ToDomain()
+		users = append(users, *user)
+	}
+	return users, nil
 }
 
 func (u User) FindByID(id string) (*entities.User, error) {

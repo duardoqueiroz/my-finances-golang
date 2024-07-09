@@ -25,6 +25,20 @@ func (userSelectManager) ById() string {
   `
 }
 
+func (userSelectManager) All() string {
+	return `
+    SELECT 
+      u.id as id, 
+      u.name as name, 
+      u.email as email, 
+      u.phone as phone, 
+      u.password as password, 
+      u.cpf as cpf, 
+      u.role as role 
+    FROM users u;
+  `
+}
+
 func (userSelectManager) ByEmail() string {
 	return `
     SELECT 
