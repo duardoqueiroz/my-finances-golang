@@ -1,7 +1,6 @@
 package middlewares
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/duardoqueiroz/my-finances-golang/pkg/application/outputs"
@@ -20,8 +19,6 @@ func EnsureAuthenticatedUser() func(next echo.HandlerFunc) echo.HandlerFunc {
 					Message: err.Error(),
 				})
 			}
-			fmt.Println(id)
-			fmt.Println(role)
 			if id != userId && role != "admin" {
 				return c.JSON(http.StatusMethodNotAllowed, &outputs.CustomError{
 					Name:    AuthorizationError,
