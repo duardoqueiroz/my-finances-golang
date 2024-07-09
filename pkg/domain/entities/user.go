@@ -58,14 +58,15 @@ func NewUser(name, email, cpf, phone, password string) (*User, error) {
 	}, nil
 }
 
-func NewExistentUser(id, name, email, cpf, phone, role string) *User {
+func NewExistentUser(id, name, email, cpf, phone, role, password string) *User {
 	return &User{
-		id:    id,
-		name:  keyvalues.NewExistentName(name),
-		email: keyvalues.NewExistentEmail(email),
-		cpf:   keyvalues.NewExistentCPF(cpf),
-		phone: keyvalues.NewExistentPhone(phone),
-		role:  keyvalues.NewExistentRole(role),
+		id:       id,
+		name:     keyvalues.NewExistentName(name),
+		email:    keyvalues.NewExistentEmail(email),
+		cpf:      keyvalues.NewExistentCPF(cpf),
+		phone:    keyvalues.NewExistentPhone(phone),
+		password: keyvalues.NewExistentPassword(password),
+		role:     keyvalues.NewExistentRole(role),
 	}
 }
 
@@ -89,7 +90,11 @@ func (u User) Phone() string {
 	return u.phone.Value()
 }
 
-func (u User) Password() string {
+func (u User) Password() *keyvalues.Password {
+	return u.password
+}
+
+func (u User) PasswordHash() string {
 	return u.password.Value()
 }
 

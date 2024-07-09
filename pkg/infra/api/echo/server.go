@@ -78,4 +78,5 @@ func (s *echoServer) setAppHandlers(router *echo.Echo) {
 	})
 
 	routes.LoadUserRoutes(api, s.repoHandler)
+	routes.LoadAuthRoutes(api, s.repoHandler)
 }

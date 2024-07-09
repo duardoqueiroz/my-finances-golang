@@ -33,8 +33,18 @@ func (u User) FindByID(id string) (*entities.User, error) {
 	return user, nil
 }
 
+func (u User) FindByEmail(email string) (*entities.User, error) {
+	dest := dtos.User().Select().ByEmail()
+	err := u.conn.Get(&dest, queries.User().Select().ByEmail(), email)
+	if err != nil {
+		return nil, u.handleErrors(err)
+	}
+	user := dest.ToDomain()
+	return user, nil
+}
+
 func (u User) Create(user *entities.User) (string, error) {
-	_, err := u.conn.Exec("INSERT INTO users (id, name, email, cpf, phone, password, role) VALUES ($1, $2, $3, $4, $5, $6, $7)", user.ID(), user.Name(), user.Email(), user.CPF(), user.Phone(), user.Password(), user.Role())
+	_, err := u.conn.Exec("INSERT INTO users (id, name, email, cpf, phone, password, role) VALUES ($1, $2, $3, $4, $5, $6, $7)", user.ID(), user.Name(), user.Email(), user.CPF(), user.Phone(), user.PasswordHash(), user.Role())
 	if err != nil {
 		return "", u.handleErrors(err)
 	}
