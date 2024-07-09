@@ -42,7 +42,7 @@ func (a AuthHandler) SignUp(c echo.Context) error {
 func (ah *AuthHandler) Login(c echo.Context) error {
 	cookie, err := c.Cookie("token")
 	if err == nil {
-		if err := cookie.Valid(); err == nil {
+		if cookie.Value != "" {
 			return c.JSON(http.StatusForbidden, "user already logged in")
 		}
 	}
@@ -68,10 +68,8 @@ func (ah *AuthHandler) Login(c echo.Context) error {
 
 func (ah *AuthHandler) Logout(c echo.Context) error {
 	c.SetCookie(&http.Cookie{
-		Name:    "token",
-		Value:   "",
-		Path:    "/",
-		Expires: time.Unix(-1, 0),
+		Name:  "token",
+		Value: "",
 	})
 	return c.JSON(http.StatusOK, "user logged out")
 }
