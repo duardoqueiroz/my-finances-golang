@@ -3,6 +3,7 @@ package usecases
 import (
 	"github.com/duardoqueiroz/my-finances-golang/pkg/application/inputs"
 	"github.com/duardoqueiroz/my-finances-golang/pkg/application/outputs"
+	"github.com/duardoqueiroz/my-finances-golang/pkg/domain/entities"
 	"github.com/duardoqueiroz/my-finances-golang/pkg/domain/repositories"
 )
 
@@ -15,7 +16,12 @@ func NewUserUseCase(userRepo repositories.UserRepository) *UserUseCase {
 }
 
 func (u UserUseCase) Update(id string, input inputs.UpdateUserInput) error {
-	return nil
+	user, err := entities.NewUser(input.Name, input.Email, input.CPF, input.Phone, input.Password)
+	if err != nil {
+		return err
+	}
+	err = u.repo.Update(id, user)
+	return err
 }
 
 func (u UserUseCase) FindAll() ([]outputs.FindAllUserOutput, error) {
