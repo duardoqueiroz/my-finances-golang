@@ -1,13 +1,11 @@
 package middlewares
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/casbin/casbin"
 	"github.com/duardoqueiroz/my-finances-golang/pkg/application/outputs"
 	"github.com/duardoqueiroz/my-finances-golang/pkg/domain/repositories"
-	"github.com/duardoqueiroz/my-finances-golang/pkg/infra/security"
 	"github.com/labstack/echo/v4"
 )
 
@@ -67,12 +65,4 @@ func UserAuthorizer(authEnforcer *casbin.Enforcer, userRepo repositories.UserRep
 		}
 		return fn
 	}
-}
-
-func parseToken(token string) (string, string, error) {
-	parsedToken, err := security.ParseAccessToken(token)
-	if err != nil {
-		return "", "", fmt.Errorf("error parsing token: %w", err)
-	}
-	return parsedToken.Id, parsedToken.Role, nil
 }
